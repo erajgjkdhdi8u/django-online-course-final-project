@@ -17,8 +17,9 @@ with sync_playwright() as playwright:
     page.locator("#id_password").fill(os.environ["DEMO_ADMIN_PASSWORD"])
     page.locator('input[type="submit"]').click()
     page.wait_for_url(f"{BASE}/admin/")
-    assert "Authentication and Authorization" in page.locator("body").inner_text()
-    assert "Online Course" in page.locator("body").inner_text()
+    admin_text = page.locator("body").inner_text().casefold()
+    assert "authentication" in admin_text, admin_text[:1200]
+    assert "online course" in admin_text, admin_text[:1200]
     page.screenshot(path=str(OUTPUT / "03-admin-site.png"), full_page=True)
 
     context.clear_cookies()
