@@ -1,0 +1,20 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="card soft-card mx-auto" style="max-width:480px">
+  <div class="card-body p-5">
+    <p class="eyebrow">WELCOME BACK</p>
+    <h1 class="h2 display-heading mb-4">Sign in</h1>
+    {% if message %}<div class="alert alert-warning">{{ message }}</div>{% endif %}
+    <form method="post" action="{% url 'onlinecourse:login' %}">
+      {% csrf_token %}
+      <label class="form-label" for="username">Username</label>
+      <input class="form-control mb-3" id="username" name="username" required>
+      <label class="form-label" for="psw">Password</label>
+      <input class="form-control mb-4" type="password" id="psw" name="psw" required>
+      <button class="btn btn-primary w-100" type="submit">Sign in</button>
+    </form>
+    <p class="small muted mt-4">New here? <a href="{% url 'onlinecourse:registration' %}">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

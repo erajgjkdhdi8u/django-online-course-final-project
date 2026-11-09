@@ -1,0 +1,64 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}{{ course.name }}{% endblock %}
+{% block content %}
+<a href="{% url 'onlinecourse:index' %}" class="small text-decoration-none">← All courses</a>
+<div class="mt-4 mb-5">
+  <p class="eyebrow">COURSE DETAILS</p>
+  <h1 class="display-heading display-5">{{ course.name }}</h1>
+  <p class="muted fs-5">{{ course.description }}</p>
+</div>
+<section class="mb-5">
+  <h2 class="h4 section-title mb-3">Course lessons</h2>
+  {% for lesson in lessons %}
+    <article class="card soft-card mb-3">
+      <div class="card-body p-4">
+        <div class="small text-primary fw-bold mb-2">LESSON {{ forloop.counter }}</div>
+        <h3 class="h5 section-title">{{ lesson.title }}</h3>
+        <p class="muted mb-0">{{ lesson.content|linebreaksbr }}</p>
+      </div>
+    </article>
+  {% empty %}
+    <p class="muted">Lessons are being prepared.</p>
+  {% endfor %}
+</section>
+
+<section id="exam" class="card soft-card">
+  <div class="card-body p-4 p-md-5">
+    <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center mb-2">
+      <h2 class="h4 section-title mb-0">Final exam</h2>
+      <span class="badge text-bg-light border">Passing score: 70%</span>
+    </div>
+    <p class="muted">Select the correct answer for each question, then submit your exam.</p>
+    {% if not user.is_authenticated %}
+      <p>Please <a href="{% url 'onlinecourse:login' %}">sign in</a> to take this exam.</p>
+    {% elif not is_enrolled %}
+      <p class="muted">Enroll in the course before taking the exam.</p>
+      <form method="post" action="{% url 'onlinecourse:enroll' course.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Enroll in course</button>
+      </form>
+    {% else %}
+      <form id="questionform" method="post" action="{% url 'onlinecourse:submit' course.pk %}">
+        {% csrf_token %}
+        {% for lesson in lessons %}
+          {% for question in lesson.question_set.all %}
+            <div class="py-4 {% if not forloop.parentloop.first or not forloop.first %}border-top{% endif %}">
+              <div class="small muted mb-2">Question {{ forloop.counter }} · {{ question.grade }} points</div>
+              <h3 class="h6 fw-bold mb-3">{{ question.question_text }}</h3>
+              {% for choice in question.choice_set.all %}
+                <label class="option">
+                  <input class="form-check-input me-2" type="checkbox"
+                         name="question_{{ question.pk }}" id="choice_{{ choice.pk }}"
+                         value="{{ choice.pk }}">
+                  {{ choice.choice_text }}
+                </label>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        {% endfor %}
+        <button class="btn btn-primary px-5 py-2 mt-2" type="submit">Submit exam</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

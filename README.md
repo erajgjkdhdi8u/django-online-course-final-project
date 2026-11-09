@@ -1,5 +1,65 @@
-# Django Online Course Final Project
+# Django Online Course — IBM / Coursera Final Project
 
-IBM/Coursera Django final project: courses, lessons, exams, grading, and Django Admin.
+A Django app for the IBM online-course assessment. Includes all **7 rubric tasks**:
+course/lesson/enrollment models, Question/Choice/Submission, Django Admin inline editors,
+Bootstrap course details, authenticated exam submission, grading, and exam result review.
 
-Setup details and submission links will be completed with the implementation.
+## Local setup (Windows PowerShell)
+
+```powershell
+git clone https://github.com/erajgjkdhdi8u/django-online-course-final-project.git
+cd django-online-course-final-project
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_demo --admin-password "YOUR-ADMIN-PASSWORD" --student-password "YOUR-STUDENT-PASSWORD"
+python manage.py runserver
+```
+
+Use passwords of at least 8 characters. The seed command is for **local demo/testing only**.
+Do not reuse those passwords for real accounts. Do not deploy this demo with DEBUG enabled
+or the development SECRET_KEY; set DJANGO_SECRET_KEY, DJANGO_DEBUG=0, and
+DJANGO_ALLOWED_HOSTS in your deployment environment.
+
+### Run the tests
+
+```bash
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py test
+```
+
+Visit http://127.0.0.1:8000/onlinecourse/, sign in as `demo` using the student
+password you provided, open *Django Web Development*, and submit the 3-question
+exam. Admin is at http://127.0.0.1:8000/admin/ (username `admin`).
+
+### Submission links
+
+1. [models.py](onlinecourse/models.py) — Question, Choice, Submission.
+2. [admin.py](onlinecourse/admin.py) — seven imported classes and inline editors.
+3. [03-admin-site.png](screenshots/03-admin-site.png) — real Django Admin screenshot.
+4. [course_details_bootstrap.html](onlinecourse/templates/onlinecourse/course_details_bootstrap.html) — course, lessons, and exam form.
+5. [views.py](onlinecourse/views.py) — submit, show_exam_result.
+6. [urls.py](onlinecourse/urls.py) — submit and results routes.
+7. [07-final.png](screenshots/07-final.png) — successful exam result.
+
+Screenshots are generated from a running Django app in GitHub Actions (not mockups).
+Look in [Actions](../../actions) for verification logs if images are not yet present.
+
+### Project structure
+
+- `myproject/` — Django settings and top-level URLs
+- `onlinecourse/` — models, admin, views, URLs, templates, migrations
+- `onlinecourse/management/commands/seed_demo.py` — demo data
+- `onlinecourse/tests.py` — assessment and access-control tests
+- `scripts/capture_screenshots.py` — real Playwright browser capture
+- `.github/workflows/verify-and-screenshots.yml` — CI checks and screenshots
+
+### Exam behavior
+
+A student enrolls in a course and submits the checkbox form. Selected choice IDs are
+validated against the questions in that course. Questions receive their grade points
+only when the **exact complete set of correct choices** is selected. Passing is 70% or
+higher. Exam submissions and graded outcomes are persisted and can only be accessed
+by the student who made the submission.

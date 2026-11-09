@@ -1,0 +1,53 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}Exam results{% endblock %}
+{% block content %}
+<a class="small text-decoration-none" href="{% url 'onlinecourse:course_details' course.pk %}">← Back to course</a>
+<div class="card soft-card mt-4 mb-4">
+  <div class="card-body p-4 p-md-5">
+    {% if passed %}
+      <div class="alert alert-success border-0 mb-4">
+        <strong>Congratulations! Поздравляем!</strong> You have successfully passed the exam.
+      </div>
+    {% else %}
+      <div class="alert alert-warning border-0 mb-4">
+        <strong>Keep learning!</strong> You need 70% to pass. Review the answers and try again.
+      </div>
+    {% endif %}
+    <p class="eyebrow">FINAL EXAM RESULT</p>
+    <h1 class="display-heading mb-4">Your exam results</h1>
+    <div class="row align-items-end">
+      <div class="col-sm-6">
+        <div class="score-big">{{ submission.percentage|floatformat:0 }}%</div>
+        <div class="muted">Overall grade · {{ submission.score }} / {{ submission.max_score }} points</div>
+      </div>
+      <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+        {% if passed %}
+          <span class="badge fs-6 text-bg-success p-3">PASSED</span>
+        {% else %}
+          <span class="badge fs-6 text-bg-warning p-3">NOT PASSED</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<h2 class="h4 section-title mb-3">Exam results · Answer review</h2>
+{% for result in exam_results %}
+  <div class="card soft-card mb-3">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h3 class="h6 fw-bold mb-0">{{ forloop.counter }}. {{ result.question.question_text }}</h3>
+        {% if result.is_correct %}
+          <span class="badge text-bg-success">Correct</span>
+        {% else %}
+          <span class="badge text-bg-danger">Incorrect</span>
+        {% endif %}
+      </div>
+      <div class="small muted mb-1">Your answer</div>
+      <p class="mb-3">{% for choice in result.user_choices %}{{ choice.choice_text }}{% if not forloop.last %}, {% endif %}{% empty %}No answer selected{% endfor %}</p>
+      <div class="small muted mb-1">Correct answer</div>
+      <p class="text-success fw-semibold mb-0">{% for choice in result.correct_choices %}{{ choice.choice_text }}{% if not forloop.last %}, {% endif %}{% empty %}Not provided{% endfor %}</p>
+    </div>
+  </div>
+{% endfor %}
+<a class="btn btn-primary mt-3" href="{% url 'onlinecourse:course_details' course.pk %}">Back to course / Retake exam</a>
+{% endblock %}

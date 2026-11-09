@@ -1,0 +1,31 @@
+{% extends "onlinecourse/base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="mb-5">
+  <p class="eyebrow mb-2">LEARN AT YOUR OWN PACE</p>
+  <h1 class="display-heading display-5">Explore online courses</h1>
+  <p class="muted fs-5">Follow a lesson, test your knowledge, and see your exam results instantly.</p>
+</div>
+<div class="row g-4">
+  {% for course in course_list %}
+    <div class="col-md-6">
+      <div class="card soft-card h-100 overflow-hidden">
+        {% if course.image %}
+          <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.name }}" style="height:170px;object-fit:cover">
+        {% else %}
+          <div style="height:130px;background:linear-gradient(120deg,#12264d,#607dde);display:grid;place-items:center;color:white;font-size:42px">✦</div>
+        {% endif %}
+        <div class="card-body p-4">
+          <div class="eyebrow mb-2">ONLINE LEARNING</div>
+          <h2 class="h4 section-title">{{ course.name }}</h2>
+          <p class="muted">{{ course.description|truncatewords:28 }}</p>
+          <p class="small muted">{{ course.total_enrollment }} students enrolled</p>
+          <a href="{% url 'onlinecourse:course_details' course.pk %}" class="btn btn-primary">View course</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12"><div class="alert alert-info">No courses are available yet. Add one in Django Admin.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}
